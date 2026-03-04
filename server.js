@@ -1,6 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import { existsSync } from "fs";
+import { fileURLToPath } from "url";
 import accommodationRoutes from "./routes/accommodationRoutes.js";
 import reservationRoutes from "./routes/reservationRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
@@ -10,6 +13,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.resolve(__dirname, "../client/dist");
+const hasClientBuild = existsSync(path.join(clientDistPath, "index.html"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -30,6 +37,20 @@ app.use("/api/users", userRoutes);
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
+if (hasClientBuild) {
+  app.use(express.static(clientDistPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      message: "API is running",
+      health: "/api/health"
+    });
+  });
+}
 
 const start = async () => {
   try {
