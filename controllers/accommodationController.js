@@ -24,6 +24,20 @@ export const getAccommodations = async (req, res) => {
   res.json(accommodations);
 };
 
+export const getMyAccommodations = async (req, res) => {
+  if (req.user.role === "admin") {
+    const accommodations = await Accommodation.find().sort({ createdAt: -1 });
+    return res.json(accommodations);
+  }
+
+  if (req.user.role !== "host") {
+    return res.status(403).json({ message: "Host access required" });
+  }
+
+  const accommodations = await Accommodation.find({ host: req.user.id }).sort({ createdAt: -1 });
+  return res.json(accommodations);
+};
+
 export const getAccommodationById = async (req, res) => {
   const accommodation = await Accommodation.findById(req.params.id);
   if (!accommodation) {

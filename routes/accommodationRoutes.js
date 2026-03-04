@@ -4,6 +4,7 @@ import {
   createAccommodation,
   deleteAccommodation,
   getAccommodationById,
+  getMyAccommodations,
   getAccommodations,
   updateAccommodation
 } from "../controllers/accommodationController.js";
@@ -11,6 +12,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAccommodations);
+router.get("/mine", auth, getMyAccommodations);
 router.get("/:id", getAccommodationById);
 router.post("/", auth, createAccommodation);
 router.put("/:id", auth, updateAccommodation);
