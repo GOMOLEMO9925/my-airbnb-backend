@@ -45,10 +45,21 @@ if (hasClientBuild) {
   });
 } else {
   app.get("/", (req, res) => {
-    res.status(200).json({
-      message: "API is running",
-      health: "/api/health"
-    });
+    res
+      .status(200)
+      .type("html")
+      .send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Airbnb API</title>
+  </head>
+  <body>
+    <h1>Airbnb API is running</h1>
+    <p>Health check: <a href="/api/health">/api/health</a></p>
+  </body>
+</html>`);
   });
 }
 
